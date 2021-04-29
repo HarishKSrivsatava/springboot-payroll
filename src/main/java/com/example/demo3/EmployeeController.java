@@ -19,10 +19,13 @@ public class EmployeeController {
 	private EmployeeModelAssembler employeeModelAssembler;
 	
 	//Constructor injection of EmployeeReposioty dependency
-	EmployeeController(EmployeeRepository repository, EmployeeModelAssembler employeeModelAssembler){
+	EmployeeController(EmployeeRepository repository, 
+			EmployeeModelAssembler employeeModelAssembler){
 		this.repository = repository;
 		this.employeeModelAssembler = employeeModelAssembler;
 	}
+	
+	
 	@GetMapping("/employee/{id}")
 	public EntityModel<Employee> getEmployeeById(@PathVariable Long id){
 		Employee emp = repository.findById(id)
@@ -32,10 +35,11 @@ public class EmployeeController {
 	
 	@GetMapping("/employees")
 	public CollectionModel<EntityModel<Employee>> findAllEmployees(){
-		List<EntityModel<Employee>> employees = repository.findAll()
-				  .stream()
-				  .map(employeeModelAssembler::toModel)
-				  .collect(Collectors.toList());
+		List<EntityModel<Employee>> employees = 
+				  repository.findAll()
+							.stream()
+							.map(employeeModelAssembler::toModel)
+							.collect(Collectors.toList());
 	return CollectionModel.of(employees,
 			WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder
 					.methodOn(EmployeeController.class)

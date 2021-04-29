@@ -21,12 +21,16 @@ public class EmployeeController {
 	EmployeeController(EmployeeRepository repository){
 		this.repository = repository;
 	}
+	
+	
 	@GetMapping("/employee/{id}")
 	public EntityModel<Employee> getEmployeeById(@PathVariable Long id){
 		Employee emp = repository.findById(id)
 								.orElseThrow(() -> new EmployeeNotFoundException(id));
-		return EntityModel.of(emp, WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(EmployeeController.class)
-				.getEmployeeById(id)).withSelfRel());
+		return EntityModel.of(emp,WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder
+						.methodOn(EmployeeController.class).getEmployeeById(id)
+						).withSelfRel()
+				);
 		/**
 		 * linkTo(methodOn(EmployeeController.class).one(id)).withSelfRel() asks that 
 		 * Spring HATEOAS build a link to the EmployeeController's getEmployeeById() method, 
@@ -41,10 +45,13 @@ public class EmployeeController {
 				  .map(emp -> EntityModel.of(emp, 
 				   WebMvcLinkBuilder.linkTo(
 				   WebMvcLinkBuilder.methodOn(EmployeeController.class).
-				   findAllEmployees()).withRel("employees"))).collect(Collectors.toList());
-	return CollectionModel.of(employees,
+				   getEmployeeById(emp.getId()))
+				  .withSelfRel()))
+				  .collect(Collectors.toList());
+		return CollectionModel.of(employees,
 			WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder
-					.methodOn(EmployeeController.class).findAllEmployees()).withSelfRel());
+					.methodOn(EmployeeController.class).findAllEmployees())
+			.withSelfRel());
 	
 	} 
 }
